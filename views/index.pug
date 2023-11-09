@@ -2,4 +2,13 @@ extends layout
 
 block content
   h1= title
-  p Welcome to #{title}
+  p Welcome to #[em Groceria], a grocery store with many products,selections and options to add your own!
+
+
+
+  h1 The selections and products so far:
+
+  ul
+    li #[strong Products:] !{product_count}
+    li #[strong Selections:] !{category_count}
+

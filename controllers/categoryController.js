@@ -2,11 +2,6 @@ const Category = require("../models/category");
 const asyncHandler = require("express-async-handler")
 
 
-// home page 
-exports.index = asyncHandler(async (req,res,next) => {
-    res.send("Site home page not implemented");
-})
-
 //CRUD (not in order)
 
 //READ
@@ -24,12 +19,12 @@ exports.category_detail = asyncHandler(async (req,res,next) => {
 //CREATE
 //Create category form on GET
 exports.category_create_get = asyncHandler(async (req,res,next) => {
-    res.send('GET form not implemented');
+    res.send('GET create form not implemented');
 })
 
 //Create category on post 
 exports.category_create_post = asyncHandler(async (req,res,next) => {
-    res.send('POST form not implemented');
+    res.send('POST create form not implemented');
 })
 
 

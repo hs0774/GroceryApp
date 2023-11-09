@@ -1,5 +1,20 @@
 const Product = require("../models/product");
-const asyncHandler = require("express-async-handler")
+const Category = require("../models/category");
+const asyncHandler = require("express-async-handler");
+
+
+// home page 
+exports.index = asyncHandler(async (req,res,next) => {
+    const [products,categories] = await Promise.all([
+        Product.countDocuments({}).exec(),
+        Category.countDocuments({}).exec(),
+    ])
+    res.render('index',{
+        title: 'Groceria-Home',
+        product_count:products,
+        category_count: categories,
+    })
+})
 
 //Display list of all Products
 exports.product_list = asyncHandler(async function(req,res,next){
@@ -13,7 +28,7 @@ exports.product_detail = asyncHandler(async (req,res,next) => {
 
 //Display product create form on GET
 exports.product_create_get = asyncHandler(async function(req,res,next){
-    res.send('form coming soon')
+    res.send('GET create form coming soon')
 })
 
 //Display product create form on POST
