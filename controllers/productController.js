@@ -36,7 +36,10 @@ exports.product_detail = asyncHandler(async (req,res,next) => {
 
 //Display product create form on GET
 exports.product_create_get = asyncHandler(async function(req,res,next){
-    res.send('GET create form coming soon')
+    const categories = await Category.find.exec();
+    res.render("product_create",{
+        category:categories,
+    })
 })
 
 //Display product create form on POST

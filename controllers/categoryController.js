@@ -27,7 +27,7 @@ exports.category_detail = asyncHandler(async (req,res,next) => {
 //CREATE
 //Create category form on GET
 exports.category_create_get = asyncHandler(async (req,res,next) => {
-    res.send('GET create form not implemented');
+    res.render("category_create", {title:'Create new Category'});
 })
 
 //Create category on post 
