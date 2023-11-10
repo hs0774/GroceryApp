@@ -18,12 +18,20 @@ exports.index = asyncHandler(async (req,res,next) => {
 
 //Display list of all Products
 exports.product_list = asyncHandler(async function(req,res,next){
-    res.send('coming soon');
+    const products = await Product.find({},"name price category" ).populate("category").exec();
+
+    res.render("product_list", {
+        title:"Our products",
+        products:products,
+    })
 })
 
 //Display detail page for specific product
 exports.product_detail = asyncHandler(async (req,res,next) => {
-    res.send(`coming soon product id ${req.params.id}`);
+    const products = await Product.findById(req.params.id).populate("category").exec();
+    res.render("product_detail", {
+        product:products,
+    })
 })
 
 //Display product create form on GET

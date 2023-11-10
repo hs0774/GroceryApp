@@ -1,0 +1,15 @@
+extends layout
+
+block content
+
+  h1= product.name
+
+  h3= product.description
+  
+  p
+    | Category: 
+    a(href=product.category.url) #{product.category.name}
+  p Price: #{product.price}
+  p Quantity:  #{product.quantity}
+  p Serial code: #{product.productNumber}
+

@@ -1,0 +1,17 @@
+extends layout
+
+block content
+
+  h1= title
+
+  ul
+    each product in products
+      li
+        a(href=product.url) #{product.name}
+        if product.category
+          |  ($#{product.price}, Category:
+          a(href=product.category.url) #{product.category.name})
+        else
+          |  (No category)
+    else
+      li There are no products.

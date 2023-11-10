@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 require('dotenv').config();
 console.log(
-    'This script populates some test itemsto your database. Specified database as argument - e.g.: node populatedb "mongodb+srv://cooluser:coolpassword@cluster0.lz91hw2.mongodb.net/local_library?retryWrites=true&w=majority"'
+    'This script populates some test itemsto your database. Specified database as argument - e.g.: node populatedb "mongodb+srv://cooluser:coolpassword@cluster0.lz91hw2.mongodb.net/GroceryApp?retryWrites=true&w=majority"'
   );
   
   // Get arguments passed on command line
@@ -31,14 +31,14 @@ console.log(
     mongoose.connection.close();
   }
   
-  async function categoryCreate(index, name) {
-    if(category.length > 15) {
-        console.log(`Error: Name for category '${name}' exceeds maximum allowed length of 15.`);
+  async function categoryCreate(index, name,description) {
+    if(name.length > 20 || description.length>100) {
+        console.log(`Error: Name for category '${name}' exceeds maximum allowed length of 15 and ${description}, 100.`);
         return;
     }
-    const category = new Category({ name: name });
-    await category.save();
-    categories[index] = category;
+    const newCategory = new Category({ name: name, description:description });
+    await newCategory.save();
+    categories[index] = newCategory;
     console.log(`Added category: ${name}`);
   }
   
@@ -65,11 +65,11 @@ console.log(
   async function createCategories() {
     console.log("Adding categories");
     await Promise.all([
-      categoryCreate(0, "Dairy"),
-      categoryCreate(1, "Meat"),
-      categoryCreate(2, "Bread"),
-      categoryCreate(3, "Produce"),
-      categoryCreate(4, "Canned Goods"),
+      categoryCreate(0, "Dairy","Dairy: Milk, cheese, yogurt - rich in calcium and protein."),
+      categoryCreate(1, "Meat","Meat: Beef, chicken, pork - excellent source of protein."),
+      categoryCreate(2, "Bread","Bread: Staple made from flour, water, and yeast."),
+      categoryCreate(3, "Produce","Produce: Fresh fruits and veggies - packed with nutrients."),
+      categoryCreate(4, "Canned Goods","Canned Goods: Preserved vegetables, fruits, soups in cans."),
     ]);
   }
   
@@ -80,7 +80,7 @@ console.log(
       ProductCreate(1, "Milk", "A nutritious dairy product, rich in essential nutrients and versatility in cooking and beverages", categories[0], 3.99,25,"9780756411336"),
       ProductCreate(2, "Bread", "White bread known for its soft texture,making it a popular choice for sandwiches", categories[2], 5.99,30,"9782765379504"),
       ProductCreate(3, "Broccoli", "Broccoli is a nutritious green vegetable prized for its high vitamin and fiber content", categories[3], 3.99,24,"9785745479528"),
-      ProductCreate(4, "Baked Beans", "A flavorful dish made from cooked navy beans, sweetened with a tomato-based sauce.", categories[3], 2.99,5,"9789993335204"),
+      ProductCreate(4, "Baked Beans", "A flavorful dish made from cooked navy beans, sweetened with a tomato-based sauce.", categories[4], 2.99,5,"9789993335204"),
     ]);
   }
   
