@@ -107,10 +107,10 @@ exports.category_delete_post = asyncHandler(async (req,res,next) => {
 //UPDATE
 //Update form on Get
 exports.category_update_get = asyncHandler(async (req,res,next) => {
-    const categories = await Category.findById(req.params.id).populate("name description").exec();
+    const category = await Category.findById(req.params.id).populate("name description").exec();
 
    
-      if(categories.length === 0){
+      if(!category){
        const err = new Error("Category not found")
        err.status=404;
        return next(err);
@@ -118,7 +118,7 @@ exports.category_update_get = asyncHandler(async (req,res,next) => {
    
       res.render("category_create", {
        title: "Update Category",
-       category:categories,
+       category:category,
       })
 })
 
@@ -136,7 +136,7 @@ exports.category_update_post = [
     asyncHandler(async function(req,res,next){
         const errors = validationResult(req);
 
-        const newCat = {
+        const updatedCatData = {
             name:req.body.name,
             description:req.body.description,
         };
@@ -144,15 +144,15 @@ exports.category_update_post = [
         if(!errors.isEmpty()){
             res.render("category_create", {
                 title: "Update new Category",
-                category:newCat,
+                category:updatedCatData,
                 errors:errors.array(),
             });
         } else {
-            const categoryExists = await Category.findOne({name:req.body.name,description:req.body.description}).exec();
+            const categoryExists = await Category.findOne(updatedCatData).exec();
             if(categoryExists){
                 res.redirect(categoryExists.url)
             } else {
-                const updatedCat = await Category.findByIdAndUpdate(req.params.id,newCat,{});
+                const updatedCat = await Category.findByIdAndUpdate(req.params.id,updatedCatData,{});
                res.redirect(updatedCat.url);
             }
         }

@@ -178,7 +178,7 @@ exports.product_update_post = [
     asyncHandler(async (req, res, next) => {
         const errors = validationResult(req);
 
-        const newProduct = {
+        const updatedProductData = {
             name: req.body.name,
             description: req.body.description,
             category: req.body.category,
@@ -192,11 +192,11 @@ exports.product_update_post = [
             res.render("product_create", {
                 title: 'Create new Product',
                 categories: categories,
-                product: newProduct,
+                product: updatedProductData,
                 errors: errors.array()
             });
         } else {
-            const updatedProduct =  await Product.findByIdAndUpdate(req.params.id,newProduct,{});
+            const updatedProduct =  await Product.findByIdAndUpdate(req.params.id,updatedProductData,{});
             res.redirect(updatedProduct.url);
         }
     }),
