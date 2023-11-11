@@ -107,11 +107,56 @@ exports.category_delete_post = asyncHandler(async (req,res,next) => {
 //UPDATE
 //Update form on Get
 exports.category_update_get = asyncHandler(async (req,res,next) => {
-    res.send('Get update not implemented')
+    const categories = await Category.findById(req.params.id).populate("name description").exec();
+
+   
+      if(categories.length === 0){
+       const err = new Error("Category not found")
+       err.status=404;
+       return next(err);
+      }
+   
+      res.render("category_create", {
+       title: "Update Category",
+       category:categories,
+      })
 })
 
 //Update on Post 
-exports.category_update_post = asyncHandler(async (req,res,next) => {
-    res.send("Get update not implemented")
-})
+exports.category_update_post = [
+    body("name", "Category must contain at least 3 characters")
+    .trim()
+    .isLength({min:3})
+    .escape(),
+    body("description", "Description must contain at least 3 characters")
+    .trim()
+    .isLength({min:3,max:100})
+    .escape(),
+
+    asyncHandler(async function(req,res,next){
+        const errors = validationResult(req);
+
+        const newCat = {
+            name:req.body.name,
+            description:req.body.description,
+        };
+
+        if(!errors.isEmpty()){
+            res.render("category_create", {
+                title: "Update new Category",
+                category:newCat,
+                errors:errors.array(),
+            });
+        } else {
+            const categoryExists = await Category.findOne({name:req.body.name,description:req.body.description}).exec();
+            if(categoryExists){
+                res.redirect(categoryExists.url)
+            } else {
+                const updatedCat = await Category.findByIdAndUpdate(req.params.id,newCat,{});
+               res.redirect(updatedCat.url);
+            }
+        }
+    })
+
+]
 

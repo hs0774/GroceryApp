@@ -128,10 +128,76 @@ exports.product_delete_post = asyncHandler(async (req,res,next) => {
 
 //Display product update form on get 
 exports.product_update_get = asyncHandler(async function(req,res,next) {
-    res.send("NOT IMPLEMENTED: Product update GET");
+   const [products,categories] = await Promise.all([
+     Product.findById(req.params.id).populate('category').exec(),
+     Category.find().exec(),
+   ]);
+
+   if(!products){
+    const err = new Error("Product not found")
+    err.status=404;
+    return next(err);
+   }
+
+   res.render("product_create", {
+    title: "Update Product",
+    product:products,
+    categories:categories,
+   })
+
 })
 
 //Display prdopcut form on on post 
-exports.product_update_post = asyncHandler(async function(req,res,next) {
-    res.send("NOT IMPLEMENTED: Product update Post ");
-})
+exports.product_update_post = [
+    body("name", "Must be at least 3 characters and at most 30")
+        .trim()
+        .isLength({ min: 3, max: 30 })
+        .escape(),
+    body("description", "Must be at least 3 characters and at most 100")
+        .trim()
+        .isLength({ min: 3, max: 100 })
+        .escape(),
+    body("category", "Category must be selected")
+        .trim()
+        .notEmpty()
+        .escape(),
+    body("price", "Must have a price")
+        .trim()
+        .isFloat({ min: 0 })
+        .withMessage("Must have a price at or above 0")
+        .escape(),
+    body("quantity", "Must have an amount")
+        .trim()
+        .isFloat({ min: 0 })
+        .withMessage("Must have an amount at or above 0")
+        .escape(),
+    body("productNumber", "Must be filled")
+        .trim()
+        .isLength({ min: 3, max: 15 })
+        .escape(),
+    asyncHandler(async (req, res, next) => {
+        const errors = validationResult(req);
+
+        const newProduct = {
+            name: req.body.name,
+            description: req.body.description,
+            category: req.body.category,
+            price: req.body.price,
+            quantity: req.body.quantity,
+            productNumber: req.body.productNumber,
+        };
+
+        if (!errors.isEmpty()) {
+            const categories = await Category.find().exec();
+            res.render("product_create", {
+                title: 'Create new Product',
+                categories: categories,
+                product: newProduct,
+                errors: errors.array()
+            });
+        } else {
+            const updatedProduct =  await Product.findByIdAndUpdate(req.params.id,newProduct,{});
+            res.redirect(updatedProduct.url);
+        }
+    }),
+];
