@@ -18,10 +18,10 @@ router.get("/product/create", product_controller.product_create_get);
 router.post("/product/create", product_controller.product_create_post);
 
 //Get request to delete book 
-router.get("/product/:id/create",product_controller.product_delete_get);
+router.get("/product/:id/delete",product_controller.product_delete_get);
 
 //Post request to delete book 
-router.post("/product/:id/create",product_controller.product_delete_post);
+router.post("/product/:id/delete",product_controller.product_delete_post);
 
 //Get request to updatebook
 router.get("/product/:id/update", product_controller.product_update_get);

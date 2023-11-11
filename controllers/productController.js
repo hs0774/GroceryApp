@@ -102,12 +102,28 @@ exports.product_create_post = [
 
 //Display product delete form on GET
 exports.product_delete_get = asyncHandler(async (req,res,next) => {
-    res.send('form delete GET coming soon ')
+    const product = await Product.findById(req.params.id);
+    
+    if(!product){
+        return res.redirect("/shop/products")
+    }
+
+    res.render("product_delete", {
+        title: "Delete Product",
+        product:product,
+    })
+    
 })
 
 //Display product delete form on POST
 exports.product_delete_post = asyncHandler(async (req,res,next) => {
-    res.send('form delete POST coming soon ')
+    const product = await Product.findById(req.params.id);
+
+    if (!product) {
+        return res.redirect("/shop/products");
+    }
+    await Product.findByIdAndDelete(req.body.id);
+    res.redirect("/shop/products")
 })
 
 //Display product update form on get 

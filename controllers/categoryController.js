@@ -1,6 +1,7 @@
 const Category = require("../models/category");
 const asyncHandler = require("express-async-handler")
 const { body, validationResult } = require("express-validator");
+const Product = require("../models/product")
 
 
 //CRUD (not in order)
@@ -68,12 +69,39 @@ exports.category_create_post = [
 //DELETE
 //Delete form on GET
 exports.category_delete_get = asyncHandler(async (req,res,next) => {
-    res.send("Get delete not implemented")
+    const [categories,products] = await Promise.all([
+        Category.findById(req.params.id).exec(),
+        Product.find({category:req.params.id}, "name description").exec(),
+    ])
+
+    if(categories === null){
+        res.redirect("/shop/categories")
+    }
+
+    res.render("category_delete", {
+        title:"Delete Category",
+        categories:categories,
+        products:products
+    })
 });
 
 //Delete on Post
 exports.category_delete_post = asyncHandler(async (req,res,next) => {
-    res.send("Post delete not implemented")
+    const [categories,products] = await Promise.all([
+        Category.findById(req.params.id).exec(),
+        Product.find({category:req.params.id}, "name description").exec(),
+    ])
+    if(products.length>0){
+        res.render("category_delete", {
+            title: "Delete Category",
+            categories:categories,
+            products:products,
+        })
+        return;
+    } else {
+        await Category.findByIdAndDelete(req.body.id);
+        res.redirect("/shop/categories")
+    }
 });
 
 //UPDATE

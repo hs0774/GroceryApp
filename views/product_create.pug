@@ -18,7 +18,7 @@ block content
       input#quantity.form-control(type='number', placeholder='Quantity' name='quantity' required='true' value=(undefined !== product ? product.quantity : ''))
     div.form-group
       label(for='price') Price:
-      input#price.form-control(type='number', placeholder='Price' name='price' required='true' value=(undefined !== product ? product.price : ''))
+      input#price.form-control(type='number', placeholder='Price' name='price' step='0.01' required='true' value=(undefined !== product ? product.price : ''))
     div.form-group
        label(for='category') Category:
        select#category.form-control(type='select', placeholder='Select Category' name='category' required='true')
