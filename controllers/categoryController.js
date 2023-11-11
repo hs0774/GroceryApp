@@ -1,5 +1,6 @@
 const Category = require("../models/category");
 const asyncHandler = require("express-async-handler")
+const { body, validationResult } = require("express-validator");
 
 
 //CRUD (not in order)
@@ -18,9 +19,7 @@ exports.category_list = asyncHandler(async function(req,res,next){
 //Display info on specific category
 exports.category_detail = asyncHandler(async (req,res,next) => {
     const categories = await Category.findById(req.params.id, "name description").exec();
-    res.render("category_detail", {
-        category:categories,
-    })
+    res.render("category_detail", {category:categories})
 });
 
 
@@ -31,9 +30,39 @@ exports.category_create_get = asyncHandler(async (req,res,next) => {
 })
 
 //Create category on post 
-exports.category_create_post = asyncHandler(async (req,res,next) => {
-    res.send('POST create form not implemented');
-})
+exports.category_create_post = [
+    body("name", "Category must contain at least 3 characters")
+    .trim()
+    .isLength({min:3})
+    .escape(),
+    body("description", "Description must contain at least 3 characters")
+    .trim()
+    .isLength({min:3,max:100})
+    .escape(),
+
+    asyncHandler(async function(req,res,next){
+        const errors = validationResult(req);
+
+        const newCat = new Category({name:req.body.name,description:req.body.description});
+
+        if(!errors.isEmpty()){
+            res.render("category_create", {
+                title: "Create new Category",
+                category:newCat,
+                errors:errors.array(),
+            });
+        } else {
+            const categoryExists = await Category.findOne({name:req.body.name}).exec();
+            if(categoryExists){
+                res.redirect(categoryExists.url)
+            } else {
+               await newCat.save();
+               res.redirect(newCat.url);
+            }
+        }
+    })
+
+]
 
 
 //DELETE

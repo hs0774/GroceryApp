@@ -1,6 +1,7 @@
 const Product = require("../models/product");
 const Category = require("../models/category");
 const asyncHandler = require("express-async-handler");
+const { validationResult,body } = require("express-validator");
 
 
 // home page 
@@ -36,16 +37,68 @@ exports.product_detail = asyncHandler(async (req,res,next) => {
 
 //Display product create form on GET
 exports.product_create_get = asyncHandler(async function(req,res,next){
-    const categories = await Category.find.exec();
-    res.render("product_create",{
-        category:categories,
-    })
+    const categories = await Category.find().exec();
+    res.render("product_create", {
+        title:'Create new Product',
+        categories:categories,
+    });
 })
 
 //Display product create form on POST
-exports.product_create_post = asyncHandler(async function(req,res,next){
-    res.send('form coming soon')
-})
+exports.product_create_post = [
+    body("name", "Must be at least 3 characters and at most 30")
+        .trim()
+        .isLength({ min: 3, max: 30 })
+        .escape(),
+    body("description", "Must be at least 3 characters and at most 100")
+        .trim()
+        .isLength({ min: 3, max: 100 })
+        .escape(),
+    body("category", "Category must be selected")
+        .trim()
+        .notEmpty()
+        .escape(),
+    body("price", "Must have a price")
+        .trim()
+        .isFloat({ min: 0 })
+        .withMessage("Must have a price at or above 0")
+        .escape(),
+    body("quantity", "Must have an amount")
+        .trim()
+        .isFloat({ min: 0 })
+        .withMessage("Must have an amount at or above 0")
+        .escape(),
+    body("productNumber", "Must be filled")
+        .trim()
+        .isLength({ min: 3, max: 15 })
+        .escape(),
+    asyncHandler(async (req, res, next) => {
+        const errors = validationResult(req);
+
+        const newProduct = new Product({
+            name: req.body.name,
+            description: req.body.description,
+            category: req.body.category,
+            price: req.body.price,
+            quantity: req.body.quantity,
+            productNumber: req.body.productNumber,
+        });
+
+        if (!errors.isEmpty()) {
+            const categories = await Category.find().exec();
+            res.render("product_create", {
+                title: 'Create new Product',
+                categories: categories,
+                product: newProduct,
+                errors: errors.array()
+            });
+        } else {
+            await newProduct.save();
+            res.redirect(newProduct.url);
+        }
+    }),
+];
+
 
 //Display product delete form on GET
 exports.product_delete_get = asyncHandler(async (req,res,next) => {
